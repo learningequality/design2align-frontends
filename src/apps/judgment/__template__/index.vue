@@ -1,21 +1,33 @@
 <template>
   <div>
     <div class="section">
-      <Node v-if="node1" class="node" style="float: left;" :nodeData="node1" />
-      <Node v-if="node2" class="node" style="float: right;" :nodeData="node2" />
+      <Node v-if="node1" class="node subsection" :nodeData="node1" />
+      <Node v-if="node2" class="node subsection" :nodeData="node2" />
+    </div>
+    <div style="width: 100%;">
+      <p>How related are these curriculum nodes? (<i>Required</i>)</p>
+      <input type="radio" v-model="rating" value="1" />Exact match<br />
+      <input type="radio" v-model="rating" value="0.5" />Partial match<br />
+      <input type="radio" v-model="rating" value="0" />Unrelated
+      <hr />
     </div>
     <div class="section">
-      <p>How aligned are these curriculum nodes?</p>
-      <input type="radio" v-model="rating" value="1" />Aligned<br />
-      <input type="radio" v-model="rating" value="0.5" />Similar<br />
-      <input type="radio" v-model="rating" value="0" />Different
-      <hr />
-      <p>How confident are you of this decision?</p>
-      <input type="radio" v-model="confidence" value="1" />Completely<br />
-      <input type="radio" v-model="confidence" value="0.5" />Somewhat<br />
-      <input type="radio" v-model="confidence" value="0" />Not at all<br />
-      <hr />
-      <button @click="submitRating">Submit</button>
+      <div class="subsection">
+        <p>How confident are you of this decision?</p>
+        <input type="radio" v-model="confidence" value="1" />Completely<br />
+        <input type="radio" v-model="confidence" value="0.5" />Somewhat<br />
+        <input type="radio" v-model="confidence" value="0" />Not at all<br />
+        <hr />
+        <button :disabled="rating === null" @click="submitRating">
+          Submit
+        </button>
+      </div>
+      <div class="subsection">
+        <p label-for="comment">
+          What criteria did you use to make this decision?
+        </p>
+        <textarea v-model="comment" rows="4" cols="75" name="comment" />
+      </div>
     </div>
   </div>
 </template>
@@ -33,7 +45,8 @@ export default {
       node1: null,
       node2: null,
       rating: null,
-      confidence: null
+      confidence: null,
+      comment: ""
     };
   },
   created() {
@@ -41,30 +54,54 @@ export default {
   },
   methods: {
     setNodes() {
+      this.node1 = null;
+      this.node2 = null;
+      this.rating = null;
+      this.confidence = null;
+      this.startTimer();
       nodeResource.getComparisonNodes().then(nodes => {
         this.node1 = nodes[0];
         this.node2 = nodes[1];
       });
     },
     submitRating() {
-      const name = this.$route.name.replace("judgment");
+      const name = this.$route.name.replace("judgment-", "");
       const uiName =
         name.slice(0, 1).toUpperCase() + name.replace("-index", "").slice(1);
+      this.stopTimer();
       return judgmentResource
         .submitJudgment(
           this.node1.id,
           this.node2.id,
           this.rating,
           this.confidence,
-          uiName
+          uiName,
+          {
+            comment: this.comment,
+            time_for_judgment: this.elapsedTime
+          }
         )
         .then(() => {
-          this.node1 = null;
-          this.node2 = null;
-          this.rating = null;
-          this.confidence = null;
           return this.setNodes();
         });
+    },
+    startTimer() {
+      this.elapsedTime = null;
+      this.resumeTimer();
+      window.addEventListener("blur", this.stopTimer.bind(this));
+      window.addEventListener("focus", this.resumeTimer.bind(this));
+    },
+    stopTimer() {
+      if (this.timerRunning) {
+        this.timerRunning = false;
+        this.elapsedTime += Date.now() - this.startTime;
+      }
+    },
+    resumeTimer() {
+      if (!this.timerRunning) {
+        this.timerRunning = true;
+        this.startTime = Date.now();
+      }
     }
   }
 };
@@ -73,10 +110,21 @@ export default {
 <style lang="scss">
 .section {
   display: inline-block;
+  width: 100%;
+  > :first-child {
+    float: left;
+  }
+  > :last-child {
+    float: right;
+  }
+}
+
+.subsection {
+  display: inline-block;
+  width: 49%;
 }
 
 .node {
-  width: 49%;
   border: red solid 1px;
 }
 </style>
