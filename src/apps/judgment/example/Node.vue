@@ -3,12 +3,14 @@
     <div>
       <template v-if="nodeData.ancestors && nodeData.ancestors.length">
         <h3>Ancestors</h3>
-        <span
-          v-for="nodeDatum in nodeData.ancestors"
-          :key="'descendant' + nodeDatum.id"
-        >
-          {{ nodeDatum.title }}
-        </span>
+        <ul>
+          <li
+            v-for="nodeDatum in nodeData.ancestors"
+            :key="'descendant' + nodeDatum.id"
+          >
+            {{ nodeDatum.title }}
+          </li>
+        </ul>
         <hr />
       </template>
       <h3>Title</h3>
@@ -16,12 +18,14 @@
       <template v-if="nodeData.children && nodeData.children.length">
         <hr />
         <h3>Descendants</h3>
-        <span
-          v-for="nodeDatum in nodeData.children"
-          :key="'descendant' + nodeDatum.id"
-        >
-          {{ nodeDatum.title }}
-        </span>
+        <ul>
+          <li
+            v-for="nodeDatum in nodeData.children"
+            :key="'descendant' + nodeDatum.id"
+          >
+            {{ nodeDatum.title }}
+          </li>
+        </ul>
       </template>
     </div>
   </div>

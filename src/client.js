@@ -53,7 +53,7 @@ class NodeResource extends Resource {
 export const nodeResource = new NodeResource("node");
 
 class JudgmentResource extends Resource {
-  submitJudgment(node1, node2, rating, confidence, uiName) {
+  submitJudgment(node1, node2, rating, confidence, uiName, extraFields) {
     return axios.post(
       this.baseUrl,
       {
@@ -63,7 +63,8 @@ class JudgmentResource extends Resource {
         confidence,
         ui_name: uiName,
         ui_version_hash: __webpack_hash__,
-        mode: "rapid_feedback"
+        mode: "rapid_feedback",
+        extra_fields: extraFields
       },
       this.config
     );
