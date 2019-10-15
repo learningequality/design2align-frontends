@@ -64,7 +64,10 @@ class JudgmentResource extends Resource {
         ui_name: uiName,
         ui_version_hash: __webpack_hash__,
         mode: "rapid_feedback",
-        extra_fields: extraFields
+        extra_fields: {
+          ...extraFields,
+          is_dev_build: process.env.NODE_ENV !== "production"
+        }
       },
       this.config
     );
