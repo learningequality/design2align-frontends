@@ -1,6 +1,12 @@
 # Judgment UI and Visualization projects
 
 ## Project setup
+
+Install the following:
+
+* [Node](https://nodejs.org/en/download/)
+* [Yarn](https://yarnpkg.com/lang/en/docs/install)
+
 Fork the repository on github.
 
 Clone your fork of the repository.
@@ -8,6 +14,11 @@ Clone your fork of the repository.
 Inside the cloned folder install the dependencies using yarn:
 ```
 yarn install
+```
+
+To install dev dependencies, run:
+```
+yarn install --dev
 ```
 
 Make a copy of the `__template__` directory in either the `judgment` or the `visualization` folder. Edit the files in there to create your own app, it will be shown in the list of apps available from the index page of the server.
