@@ -5,7 +5,7 @@
       <Node v-if="node2" class="node subsection" :nodeData="node2" />
     </div>
     <div style="width: 100%;">
-      <p>How aligned are these curriculum nodes? (<i>Required</i>)</p>
+      <p>How related are these curriculum nodes? (<i>Required</i>)</p>
       <input type="radio" v-model="rating" value="1" />Exact match<br />
       <input type="radio" v-model="rating" value="0.5" />Partial match<br />
       <input type="radio" v-model="rating" value="0" />Unrelated
