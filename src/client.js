@@ -1,7 +1,7 @@
 import axios from "axios";
 import session from "./session";
 
-export const baseUrl = "https://alignmentapp.learningequality.org";
+export const baseUrl = "http://alignmentapp.learningequality.org";
 
 export function login(username, password) {
   return axios
