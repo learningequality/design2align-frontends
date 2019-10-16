@@ -2,21 +2,24 @@
 
 ## Project setup
 
-Ensure the following are installed:
+1. Ensure the following are installed:
 
 * [Node 10+](https://nodejs.org/en/download/)
 * [Yarn](https://yarnpkg.com/lang/en/docs/install)
 
-Fork the repository on github.
+2. Fork the repository on github.
 
-Clone your fork of the repository.
+3. Clone your fork of the repository
+```
+git clone https://github.com/[your-github-username]/design2align-frontends.git
+```
 
-Inside the cloned folder install the dependencies using yarn:
+4. Inside the cloned folder install the dependencies using yarn:
 ```
 yarn install
 ```
 
-Make a copy of the `__template__` directory in either the `judgment` or the `visualization` folder. Edit the files in there to create your own app, it will be shown in the list of apps available from the index page of the server.
+5. Make a copy of the `__template__` directory in either the `judgment` or the `visualization` folder. Edit the files in there to create your own app, it will be shown in the list of apps available from the index page of the server.
 
 
 ### Run development server to compile and hot-reload
