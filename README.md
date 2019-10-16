@@ -40,3 +40,10 @@ yarn run lint
 ```
 yarn run build
 ```
+
+### NPM
+
+If you are unable to install Yarn, and only able to use npm, most of the commands above can be invoked with `npm` instead of `yarn` - however, to fully install all dependencies for development with npm, you will have to run this command:
+```
+npm install --dev
+```
