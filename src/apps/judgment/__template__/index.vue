@@ -58,6 +58,7 @@ export default {
       this.node2 = null;
       this.rating = null;
       this.confidence = null;
+      this.comment = "";
       this.startTimer();
       nodeResource.getComparisonNodes().then(nodes => {
         this.node1 = nodes[0];
