@@ -1,5 +1,8 @@
 <template>
   <v-layout row wrap>
+    <v-alert :value="true" dismissible type="error">
+      {{ errorMsg }}
+    </v-alert>
     <v-flex xs12>
       <v-container fluid>
         <Node v-if="node1" class="node subsection" :nodeData="node1" />
@@ -33,6 +36,12 @@
             Submit
           </v-btn>
         </v-form>
+        <v-tooltip right>
+          <template v-slot:activator="{ on }">
+            <v-btn v-clipboard:copy="shareUrl" v-on="on">Share</v-btn>
+          </template>
+          <span>Click to copy</span>
+        </v-tooltip>
       </v-container>
     </v-flex>
   </v-layout>
@@ -52,7 +61,9 @@ export default {
       node2: null,
       rating: null,
       confidence: null,
-      comment: ""
+      comment: "",
+      errorMsg: "",
+      shareUrl: ""
     };
   },
   created() {
@@ -65,10 +76,63 @@ export default {
       this.rating = null;
       this.confidence = null;
       this.startTimer();
-      nodeResource.getComparisonNodes().then(nodes => {
+      this.errorMsg = "";
+      this.shareUrl = "";
+
+      if (!this.maybeSetNodesFromQueryParams()) {
+        // Randomly get two nodes to compare if the user hasn't specified them.
+        nodeResource.getComparisonNodes().then(nodes => {
+          this.node1 = nodes[0];
+          this.node2 = nodes[1];
+          this.setShareUrl(this.node1.id, this.node2.id);
+        });
+      }
+    },
+    maybeSetNodesFromQueryParams() {
+      // node1 must be set and a valid number to proceed.
+      let nodeParam1 = this.$route.query.node1;
+      if (nodeParam1 == null) {
+        return false;
+      }
+
+      let nodeId1 = parseInt(nodeParam1);
+      if (isNaN(nodeId1)) {
+        this.errorMsg = "The node1 and node2 parameters must be valid numbers.";
+        return false;
+      }
+
+      // Get node2, if the user has specified it.
+      let nodeParam2 = this.$route.query.node2;
+      let nodeId2 = parseInt(nodeParam2);
+      let useRandomNode2 = true;
+      if (!isNaN(nodeId2)) {
+        useRandomNode2 = false;
+      } else if (nodeParam2 != null) {
+        // node2 is specified but not a valid number.
+        this.errorMsg = "The node1 and node2 parameters must be valid numbers.";
+      }
+
+      // Retrieve both nodes.
+      const node1Promise = nodeResource.getModel(nodeId1);
+      let node2Promise = null;
+      if (useRandomNode2) {
+        // TODO: replace with method to get comparison node for a given node.
+        node2Promise = nodeResource.getComparisonNodes();
+      } else {
+        node2Promise = nodeResource.getModel(nodeId2);
+      }
+
+      Promise.all([node1Promise, node2Promise]).then(nodes => {
         this.node1 = nodes[0];
-        this.node2 = nodes[1];
+        if (useRandomNode2) {
+          this.node2 = nodes[1][0];
+        } else {
+          this.node2 = nodes[1];
+        }
+        this.setShareUrl(this.node1.id, this.node2.id);
       });
+
+      return true;
     },
     submitRating() {
       const name = this.$route.name.replace("judgment-", "");
@@ -108,6 +172,14 @@ export default {
         this.timerRunning = true;
         this.startTime = Date.now();
       }
+    },
+    setShareUrl(nodeId1, nodeId2) {
+      // TODO: Don't use raw string.
+      this.shareUrl =
+        "https://hackathon.learningequality.org/#/judgment/evaluation?node1=" +
+        nodeId1 +
+        "&node2=" +
+        nodeId2;
     }
   }
 };
@@ -132,5 +204,9 @@ export default {
 
 .node {
   border: red solid 1px;
+}
+
+.errorMsg {
+  color: red;
 }
 </style>
