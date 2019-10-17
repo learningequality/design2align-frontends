@@ -1,9 +1,7 @@
 <template>
   <v-container fluid>
     <v-layout row wrap>
-      <v-flex xs12>
-        <!-- <CurriculumFilter v-model="selectedCurriculum"/> -->
-      </v-flex>
+      <v-flex xs12> </v-flex>
       <v-flex xs6>
         <Node v-if="node1" :nodeData="node1" />
       </v-flex>
@@ -52,13 +50,11 @@
 
 <script>
 import Node from "./Node";
-// import CurriculumFilter from "./CurriculumFilter";
 import { nodeResource, judgmentResource } from "@/client";
 export default {
   name: "Judgment",
   components: {
     Node
-    // CurriculumFilter
   },
   data() {
     return {
@@ -94,7 +90,6 @@ export default {
     submitRating() {
       if (this.$refs.form.validate()) {
         this.$refs.form.resetValidation();
-        this.$refs.form.reset();
         const name = this.$route.name.replace("judgment-", "");
         const uiName =
           name.slice(0, 1).toUpperCase() + name.replace("-index", "").slice(1);
@@ -112,6 +107,7 @@ export default {
             }
           )
           .then(() => {
+            this.$refs.form.reset();
             return this.setNodes();
           });
       }
