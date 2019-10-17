@@ -19,7 +19,7 @@ export default {
         $schema: "https://vega.github.io/schema/vega-lite/v4.json",
         data: {
           url:
-            "http://alignmentapp.learningequality.org/files/exports/data/latest/humanjudgments.csv"
+            "https://alignmentapp.learningequality.org/files/exports/data/latest/humanjudgments.csv"
         },
         mark: "bar",
         encoding: {
