@@ -2,26 +2,24 @@
 
 ## Project setup
 
-Install the following:
+1. Ensure the following are installed:
 
-* [Node](https://nodejs.org/en/download/)
+* [Node 10+](https://nodejs.org/en/download/)
 * [Yarn](https://yarnpkg.com/lang/en/docs/install)
 
-Fork the repository on github.
+2. Fork the repository on github.
 
-Clone your fork of the repository.
+3. Clone your fork of the repository
+```
+git clone https://github.com/[your-github-username]/design2align-frontends.git
+```
 
-Inside the cloned folder install the dependencies using yarn:
+4. Inside the cloned folder install the dependencies using yarn:
 ```
 yarn install
 ```
 
-To install dev dependencies, run:
-```
-yarn install --dev
-```
-
-Make a copy of the `__template__` directory in either the `judgment` or the `visualization` folder. Edit the files in there to create your own app, it will be shown in the list of apps available from the index page of the server.
+5. Make a copy of the `__template__` directory in either the `judgment` or the `visualization` folder. Edit the files in there to create your own app, it will be shown in the list of apps available from the index page of the server.
 
 
 ### Run development server to compile and hot-reload
@@ -44,4 +42,11 @@ yarn run lint
 ### Compiles and minifies for production
 ```
 yarn run build
+```
+
+### NPM
+
+If you are unable to install Yarn, and only able to use npm, most of the commands above can be invoked with `npm` instead of `yarn` - however, to fully install all dependencies for development with npm, you will have to run this command:
+```
+npm install --dev
 ```
