@@ -5,6 +5,7 @@
     </v-alert>
 
     <v-layout row wrap>
+      <v-flex xs12> </v-flex>
       <v-flex xs6>
         <Node v-if="node1" :nodeData="node1" />
       </v-flex>
@@ -21,13 +22,13 @@
           >
             <v-radio-group
               v-model="rating"
-              label="How related are these curriculum nodes?"
+              label="How relevant are these two nodes to one another?"
               required
               :rules="matchRules"
             >
-              <v-radio label="Exact match" value="1" />
-              <v-radio label="Partial match" value="0.5" />
-              <v-radio label="Unrelated" value="0" />
+              <v-radio label="Highly relevant" value="1" />
+              <v-radio label="Somewhat relevant" value="0.5" />
+              <v-radio label="Not relevant" value="0" />
             </v-radio-group>
             <v-radio-group
               v-model="confidence"
@@ -74,7 +75,8 @@ export default {
       confidence: null,
       comment: "",
       errorMsg: "",
-      valid: true
+      valid: true,
+      selectedCurriculum: null
     };
   },
   created() {
@@ -175,6 +177,7 @@ export default {
             }
           )
           .then(() => {
+            this.$refs.form.reset();
             return this.setNodes();
           });
       }

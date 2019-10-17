@@ -3,22 +3,18 @@
     <template v-if="nodeData.ancestors && nodeData.ancestors.length">
       <v-container fluid>
         <h3>Curricular context</h3>
-        <v-list>
-          <v-list-tile
+        <ul>
+          <li
             v-for="(nodeDatum, i) in nodeData.ancestors"
-            :key="'ancestor' + nodeDatum.id"
+            :key="'descendant' + nodeDatum.id"
             :style="{
-              paddingLeft: `${i * 10}px`,
-              marginLeft: `${i * 10}px`
+              paddingLeft: `${i * 5}px`,
+              marginLeft: `${i * 5}px`
             }"
           >
-            <v-list-tile-content>
-              <v-list-tile-title>
-                • &nbsp;{{ nodeDatum.title }}
-              </v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-        </v-list>
+            {{ nodeDatum.title }}
+          </li>
+        </ul>
       </v-container>
       <v-divider />
     </template>
@@ -30,16 +26,14 @@
       <v-divider />
       <v-container fluid>
         <h3>Contents</h3>
-        <v-list>
-          <v-list-tile
+        <ul>
+          <li
             v-for="nodeDatum in nodeData.children"
             :key="'descendant' + nodeDatum.id"
           >
-            <v-list-tile-content>
-              <v-list-tile-title> • {{ nodeDatum.title }} </v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-        </v-list>
+            {{ nodeDatum.title }}
+          </li>
+        </ul>
       </v-container>
     </template>
   </v-container>
