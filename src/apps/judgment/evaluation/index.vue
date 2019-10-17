@@ -119,41 +119,28 @@ export default {
       if (nodeParam1 == null) {
         return false;
       }
-
       let nodeId1 = parseInt(nodeParam1);
       if (isNaN(nodeId1)) {
         this.errorMsg = "The node1 and node2 parameters must be valid numbers.";
         return false;
       }
+      nodeResource.getModel(nodeId1).then(node => {
+        this.node1 = node;
+      });
 
-      // Get node2, if the user has specified it.
       let nodeParam2 = this.$route.query.node2;
       let nodeId2 = parseInt(nodeParam2);
-      let useRandomNode2 = true;
       if (!isNaN(nodeId2)) {
-        useRandomNode2 = false;
+        nodeResource.getModel(nodeId2).then(node => {
+          this.node2 = node;
+        });
       } else if (nodeParam2 != null) {
         // node2 is specified but not a valid number.
         this.errorMsg = "The node1 and node2 parameters must be valid numbers.";
+        nodeResource.getNodeToCompareTo(nodeId1).then(node => {
+          this.node2 = node;
+        });
       }
-
-      // Retrieve both nodes.
-      const node1Promise = nodeResource.getModel(nodeId1);
-      let node2Promise = null;
-      if (useRandomNode2) {
-        node2Promise = nodeResource.getNodeToCompareTo(nodeId1);
-      } else {
-        node2Promise = nodeResource.getModel(nodeId2);
-      }
-
-      Promise.all([node1Promise, node2Promise]).then(nodes => {
-        this.node1 = nodes[0];
-        if (useRandomNode2) {
-          this.node2 = nodes[1][1];
-        } else {
-          this.node2 = nodes[1];
-        }
-      });
 
       return true;
     },

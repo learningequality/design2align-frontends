@@ -64,7 +64,7 @@ class NodeResource extends Resource {
         this.config
       )
       .then(response => {
-        return response.data.results;
+        return response.data.results[1];
       });
   }
   getDocumentNode(documentID) {
