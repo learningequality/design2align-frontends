@@ -63,11 +63,17 @@ export default {
       confidence: null,
       comment: "",
       errorMsg: "",
-      shareUrl: ""
+      shareUrl: "",
+      valid: true
     };
   },
   created() {
     this.setNodes();
+  },
+  computed: {
+    matchRules() {
+      return [v => !!v || "This field is required"];
+    }
   },
   methods: {
     setNodes() {
@@ -135,25 +141,28 @@ export default {
       return true;
     },
     submitRating() {
-      const name = this.$route.name.replace("judgment-", "");
-      const uiName =
-        name.slice(0, 1).toUpperCase() + name.replace("-index", "").slice(1);
-      this.stopTimer();
-      return judgmentResource
-        .submitJudgment(
-          this.node1.id,
-          this.node2.id,
-          this.rating,
-          this.confidence,
-          uiName,
-          {
-            comment: this.comment,
-            time_for_judgment: this.elapsedTime
-          }
-        )
-        .then(() => {
-          return this.setNodes();
-        });
+      if (this.$refs.form.validate()) {
+        this.$refs.form.resetValidation();
+        const name = this.$route.name.replace("judgment-", "");
+        const uiName =
+          name.slice(0, 1).toUpperCase() + name.replace("-index", "").slice(1);
+        this.stopTimer();
+        return judgmentResource
+          .submitJudgment(
+            this.node1.id,
+            this.node2.id,
+            this.rating,
+            this.confidence,
+            uiName,
+            {
+              comment: this.comment,
+              time_for_judgment: this.elapsedTime
+            }
+          )
+          .then(() => {
+            return this.setNodes();
+          });
+      }
     },
     startTimer() {
       this.elapsedTime = null;
@@ -185,28 +194,4 @@ export default {
 };
 </script>
 
-<style lang="scss">
-.section {
-  display: inline-block;
-  width: 100%;
-  > :first-child {
-    float: left;
-  }
-  > :last-child {
-    float: right;
-  }
-}
-
-.subsection {
-  display: inline-block;
-  width: 49%;
-}
-
-.node {
-  border: red solid 1px;
-}
-
-.errorMsg {
-  color: red;
-}
-</style>
+<style lang="scss"></style>

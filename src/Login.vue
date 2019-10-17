@@ -1,12 +1,14 @@
 <template>
-  <div>
-    <label for="username">Username</label>
-    <input type="text" name="username" v-model="username" />
+  <v-container>
+    <v-text-field v-model="username" name="username" label="Username" />
+    <v-text-field
+      v-model="password"
+      name="password"
+      type="password"
+      label="Password"
+    />
     <br />
-    <label for="password">Password</label>
-    <input type="password" name="password" v-model="password" />
-    <br />
-    <button @click="login">Login</button>
+    <v-btn @click="login">Login</v-btn>
     <span v-if="error" style="color: red; font-weight: bold;">
       There was an error logging in:
       {{ error }}
@@ -16,7 +18,7 @@
       Registration will redirect you to the production server, make sure to
       reopen the devserver URL after registration
     </p>
-  </div>
+  </v-container>
 </template>
 
 <script>
