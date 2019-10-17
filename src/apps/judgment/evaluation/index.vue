@@ -94,6 +94,7 @@ export default {
     submitRating() {
       if (this.$refs.form.validate()) {
         this.$refs.form.resetValidation();
+        this.$refs.form.reset();
         const name = this.$route.name.replace("judgment-", "");
         const uiName =
           name.slice(0, 1).toUpperCase() + name.replace("-index", "").slice(1);
