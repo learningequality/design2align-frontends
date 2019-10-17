@@ -1,50 +1,61 @@
 <template>
-  <v-layout row wrap>
-    <v-alert :value="true" dismissible type="error">
+  <v-container fluid>
+    <v-alert :value="errorMsg.length > 0" dismissible type="error">
       {{ errorMsg }}
     </v-alert>
-    <v-flex xs12>
-      <v-container fluid>
-        <Node v-if="node1" class="node subsection" :nodeData="node1" />
-        <Node v-if="node2" class="node subsection" :nodeData="node2" />
-      </v-container>
-    </v-flex>
-    <v-flex xs12>
-      <v-container fluid>
-        <v-form @submit="submitRating">
-          <v-radio-group
-            v-model="rating"
-            label="How related are these curriculum nodes?"
+
+    <v-layout row wrap>
+      <v-flex xs6>
+        <Node v-if="node1" :nodeData="node1" />
+      </v-flex>
+      <v-flex xs6>
+        <Node v-if="node2" :nodeData="node2" />
+      </v-flex>
+      <v-flex xs12>
+        <v-container fluid>
+          <v-form
+            @submit.prevent="submitRating"
+            v-model="valid"
+            ref="form"
+            lazy-validation
           >
-            <v-radio label="Exact match" value="1" />
-            <v-radio label="Partial match" value="0.5" />
-            <v-radio label="Unrelated" value="0" />
-          </v-radio-group>
-          <v-radio-group
-            v-model="confidence"
-            label="How confident are you of this decision?"
-          >
-            <v-radio label="Completely" value="1" />
-            <v-radio label="Somewhat" value="0.5" />
-            <v-radio label="Not at all" value="0" />
-          </v-radio-group>
-          <v-textarea
-            label="What criteria did you use to make this decision?"
-            auto-grow
-          />
-          <v-btn :disabled="rating === null" type="submit">
-            Submit
-          </v-btn>
-        </v-form>
-        <v-tooltip right>
-          <template v-slot:activator="{ on }">
-            <v-btn v-clipboard:copy="shareUrl" v-on="on">Share</v-btn>
-          </template>
-          <span>Click to copy</span>
-        </v-tooltip>
-      </v-container>
-    </v-flex>
-  </v-layout>
+            <v-radio-group
+              v-model="rating"
+              label="How related are these curriculum nodes?"
+              required
+              :rules="matchRules"
+            >
+              <v-radio label="Exact match" value="1" />
+              <v-radio label="Partial match" value="0.5" />
+              <v-radio label="Unrelated" value="0" />
+            </v-radio-group>
+            <v-radio-group
+              v-model="confidence"
+              label="How confident are you of this decision?"
+            >
+              <v-radio label="Completely" value="1" />
+              <v-radio label="Somewhat" value="0.5" />
+              <v-radio label="Not at all" value="0" />
+            </v-radio-group>
+            <v-textarea
+              label="What criteria did you use to make this decision?"
+              auto-grow
+            />
+            <v-btn type="submit">
+              Submit
+            </v-btn>
+          </v-form>
+
+          <v-tooltip right>
+            <template v-slot:activator="{ on }">
+              <v-btn v-clipboard:copy="shareUrl" v-on="on">Share</v-btn>
+            </template>
+            <span>Click to copy</span>
+          </v-tooltip>
+        </v-container>
+      </v-flex>
+    </v-layout>
+  </v-container>
 </template>
 
 <script>
