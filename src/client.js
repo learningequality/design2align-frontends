@@ -40,6 +40,15 @@ class Resource {
   }
 }
 
+class DocumentResource extends Resource {
+  getDocuments() {
+    return axios.get(`${this.baseUrl}`, this.config).then(response => {
+      return response.data.results;
+    });
+  }
+}
+export const documentResource = new DocumentResource("document");
+
 class NodeResource extends Resource {
   getComparisonNodes(scheduler = "random") {
     return axios
@@ -47,6 +56,18 @@ class NodeResource extends Resource {
       .then(response => {
         return response.data.results;
       });
+  }
+  getDocumentNode(documentID) {
+    return axios
+      .get(`${this.baseUrl}?document=${documentID}&depth=1`, this.config)
+      .then(response => {
+        return response.data.results[0];
+      });
+  }
+  getChildren(nodeID) {
+    return axios.get(`${this.baseUrl}${nodeID}`, this.config).then(response => {
+      return response.data.children;
+    });
   }
 }
 
