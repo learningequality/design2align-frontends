@@ -16,7 +16,9 @@
     "vega-embed": "^6.0.0",
     "vega-lite": "^4.0.0-beta.10",
     "vue": "^2.6.10",
-    "vue-router": "^3.0.3"
+    "vue-router": "^3.0.3",
+    "vuetify": "^1.5.19",
+    "yarn": "^1.19.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.11.0",
