@@ -74,7 +74,6 @@ export default {
       confidence: null,
       comment: "",
       errorMsg: "",
-      shareUrl: "",
       valid: true
     };
   },
@@ -84,6 +83,14 @@ export default {
   computed: {
     matchRules() {
       return [v => !!v || "This field is required"];
+    },
+    shareUrl() {
+      if (this.node1 && this.node2) {
+        let query = { node1: this.node1.id, node2: this.node2.id };
+        const route = { name: "judgment-evaluation-index", query };
+        return window.location.origin + "/" + this.$router.resolve(route).href;
+      }
+      return "";
     }
   },
   methods: {
@@ -94,14 +101,12 @@ export default {
       this.confidence = null;
       this.startTimer();
       this.errorMsg = "";
-      this.shareUrl = "";
 
       if (!this.maybeSetNodesFromQueryParams()) {
         // Randomly get two nodes to compare if the user hasn't specified them.
         nodeResource.getComparisonNodes().then(nodes => {
           this.node1 = nodes[0];
           this.node2 = nodes[1];
-          this.setShareUrl(this.node1.id, this.node2.id);
         });
       }
     },
@@ -146,7 +151,6 @@ export default {
         } else {
           this.node2 = nodes[1];
         }
-        this.setShareUrl(this.node1.id, this.node2.id);
       });
 
       return true;
@@ -192,14 +196,6 @@ export default {
         this.timerRunning = true;
         this.startTime = Date.now();
       }
-    },
-    setShareUrl(nodeId1, nodeId2) {
-      // TODO: Don't use raw string.
-      this.shareUrl =
-        "https://hackathon.learningequality.org/#/judgment/evaluation?node1=" +
-        nodeId1 +
-        "&node2=" +
-        nodeId2;
     }
   }
 };
