@@ -48,6 +48,16 @@ class NodeResource extends Resource {
         return response.data.results;
       });
   }
+  getNodeToCompareTo(baseNode, scheduler = "random") {
+    return axios
+      .get(
+        `${this.baseUrl}?left_root_id=${baseNode}&scheduler=${scheduler}`,
+        this.config
+      )
+      .then(response => {
+        return response.data.results;
+      });
+  }
 }
 
 export const nodeResource = new NodeResource("node");

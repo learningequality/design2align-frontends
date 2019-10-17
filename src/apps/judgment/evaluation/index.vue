@@ -102,6 +102,7 @@ export default {
       this.startTimer();
       this.errorMsg = "";
 
+      // TODO: Re-evaluate how this code is structured.
       if (!this.maybeSetNodesFromQueryParams()) {
         // Randomly get two nodes to compare if the user hasn't specified them.
         nodeResource.getComparisonNodes().then(nodes => {
@@ -138,8 +139,7 @@ export default {
       const node1Promise = nodeResource.getModel(nodeId1);
       let node2Promise = null;
       if (useRandomNode2) {
-        // TODO: replace with method to get comparison node for a given node.
-        node2Promise = nodeResource.getComparisonNodes();
+        node2Promise = nodeResource.getNodeToCompareTo(nodeId1);
       } else {
         node2Promise = nodeResource.getModel(nodeId2);
       }
@@ -147,7 +147,7 @@ export default {
       Promise.all([node1Promise, node2Promise]).then(nodes => {
         this.node1 = nodes[0];
         if (useRandomNode2) {
-          this.node2 = nodes[1][0];
+          this.node2 = nodes[1][1];
         } else {
           this.node2 = nodes[1];
         }
