@@ -5,23 +5,27 @@
         {{ node.document.title }}
       </div>
 
-      <v-card-title primary-title>
-        <div>
-          <p class="title">{{ node.title }}</p>
-        </div>
-        <div>
-          <v-chip class="chip-action"> <v-icon small>add</v-icon> </v-chip>
-          <v-chip class="chip-action">
-            <v-icon small>bookmark_border</v-icon>
-          </v-chip>
-          <v-chip class="chip-action"> View Content </v-chip>
-        </div>
-      </v-card-title>
+      <v-layout row wrap>
+        <v-card-title primary-title
+          ><v-flex>
+            <v-flex align-self-start
+              ><p class="title">{{ node.title }}</p></v-flex
+            >
+            <v-flex align-self-end class="card-actions">
+              <v-chip class="chip-action"> <v-icon small>add</v-icon> </v-chip>
+              <v-chip class="chip-action">
+                <v-icon small>bookmark_border</v-icon>
+              </v-chip>
+              <v-chip class="chip-action"> View Content </v-chip>
+            </v-flex>
+          </v-flex></v-card-title
+        ></v-layout
+      >
 
       <v-card-text>
         <div>
           {{ node.notes }}
-          <ul>
+          <ul v-if="fullNodeInfo">
             <li v-for="standard in fullNodeInfo.children" :key="standard.id">
               {{ standard.title }}
             </li>
@@ -31,11 +35,7 @@
 
       <v-card-actions>
         <v-chip class="tag">
-          <v-img
-            :src="getCountryIconURL(node.document.country)"
-            aspect-ratio="1"
-          ></v-img>
-          {{ node.document.country }}
+          <Flag :country="node.document.country" />
         </v-chip>
         <v-chip class="tag"> Subject </v-chip>
         <v-chip class="tag"> Grade </v-chip>
@@ -46,6 +46,7 @@
 </template>
 
 <script>
+import Flag from "../../judgment/evaluation/Flag";
 import { nodeResource } from "@/client";
 
 export default {
@@ -54,6 +55,9 @@ export default {
     return {
       fullNodeInfo: null
     };
+  },
+  components: {
+    Flag
   },
   created() {
     this.setFullNodeInfo();
@@ -69,14 +73,6 @@ export default {
       nodeResource.getModel(this.node.id).then(node => {
         this.fullNodeInfo = node;
       });
-    },
-    getCountryIconURL(country) {
-      switch (country) {
-        case "USA":
-          return "https://github.com/madebybowtie/FlagKit/raw/master/Assets/PNG/US@2x.png?raw=true";
-        default:
-          return "";
-      }
     }
   }
 };
@@ -89,6 +85,10 @@ export default {
   font-weight: bold;
   padding: 12px;
 }
+.card-actions {
+  /*position: absolute;
+  right: 16px;*/
+}
 .chip-action {
   background-color: transparent;
   border: 1px solid #2f80ed;
@@ -96,6 +96,7 @@ export default {
 }
 .tag {
   background-color: #f0f6fb;
+  text-align: center;
 }
 .title {
   font-size: 20px;

@@ -20,29 +20,24 @@
         </div>
       </v-container>
     </v-navigation-drawer>
+
     <v-content>
-      <v-container fluid>
-        {{ selectedNode }}
-        <div ref="chart"></div>
+      <v-container align-center fluid grid-list-md>
+        <v-layout row wrap>
+          <v-flex>
+            <RecommendedNode
+              v-for="node in recommendedNodes"
+              v-bind:node="node"
+              :key="node.id"
+            />
+          </v-flex>
+        </v-layout>
       </v-container>
     </v-content>
-
-    <v-container align-center fluid grid-list-md>
-      <v-layout row wrap>
-        <v-flex>
-          <RecommendedNode
-            v-for="node in recommendedNodes"
-            v-bind:node="node"
-            :key="node.id"
-          />
-        </v-flex>
-      </v-layout>
-    </v-container>
   </v-container>
 </template>
 
 <script>
-import vegaEmbed from "vega-embed";
 import CurriculumFilter from "../../judgment/evaluation/CurriculumFilter";
 import CurriculumTree from "./CurriculumTree";
 import RecommendedNode from "./RecommendedNode";
@@ -79,27 +74,6 @@ export default {
     selectNode(node) {
       this.selectedNode = node;
       this.setRecommendedNodes();
-    },
-    drawChart() {
-      vegaEmbed(this.$refs.chart, {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
-        data: {
-          url:
-            "https://alignmentapp.learningequality.org/files/exports/data/latest/humanjudgments.csv"
-        },
-        mark: "bar",
-        encoding: {
-          x: {
-            bin: true,
-            field: "rating",
-            type: "quantitative"
-          },
-          y: {
-            aggregate: "count",
-            type: "quantitative"
-          }
-        }
-      });
     },
     setRecommendedNodes() {
       recommendedNodesResource
