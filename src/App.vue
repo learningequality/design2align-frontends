@@ -1,6 +1,6 @@
 <template>
   <v-app id="app">
-    <v-toolbar>
+    <v-toolbar app>
       <router-link to="/">Home</router-link>
       <router-link to="/logout">Logout</router-link>
     </v-toolbar>
