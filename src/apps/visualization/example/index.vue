@@ -33,7 +33,7 @@
           @change="setRecommendedNodes"
         ></v-select>
 
-        <v-layout row wrap v-if="recommendedNodes">
+        <v-layout row justify-center wrap v-if="recommendedNodes">
           <v-flex
             xs12
             sm6
