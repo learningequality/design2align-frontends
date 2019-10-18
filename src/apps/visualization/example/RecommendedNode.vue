@@ -11,13 +11,13 @@
             <span class="title">{{ node.title }}</span>
           </v-flex>
           <v-flex xs8 justify-end class="card-actions">
-            <v-chip class="chip-action">
+            <v-chip class="card-action-chip">
               <v-icon small>add</v-icon>
             </v-chip>
-            <v-chip class="chip-action">
+            <v-chip class="card-action-chip">
               <v-icon small>bookmark_border</v-icon>
             </v-chip>
-            <v-chip class="chip-action"> View Content </v-chip>
+            <v-chip class="card-action-chip"> View Content </v-chip>
           </v-flex>
         </v-layout>
       </v-card-title>
@@ -114,13 +114,13 @@ export default {
 .card-actions {
   text-align: right;
 }
-.card-text {
-  padding-top: 0px;
-}
-.chip-action {
+.card-action-chip {
   background-color: transparent;
   border: 1px solid #2f80ed;
   color: #2f80ed;
+}
+.card-text {
+  padding-top: 0px;
 }
 .relevance {
   text-align: right;

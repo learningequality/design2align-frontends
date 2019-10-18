@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-navigation-drawer permanent absolute width="400px" app clipped>
+    <v-navigation-drawer permanent absolute width="350px" app clipped>
       <v-container>
         <CurriculumFilter v-model="currentCurriculum" @input="loadTree" />
         <CurriculumTree
@@ -33,13 +33,16 @@
           @change="setRecommendedNodes"
         ></v-select>
 
-        <v-layout row wrap>
-          <v-flex v-if="recommendedNodes">
+        <v-layout row wrap v-if="recommendedNodes">
+          <v-flex
+            xs12
+            sm6
+            v-for="(node, index) in recommendedNodes"
+            :key="node.id"
+          >
             <RecommendedNode
-              v-for="(node, index) in recommendedNodes"
               v-bind:node="node"
               v-bind:relevanceScore="relevanceScores[index]"
-              :key="node.id"
             />
           </v-flex>
         </v-layout>
