@@ -1,5 +1,5 @@
 <template>
-  <v-card height="100%">
+  <v-card height="100%" class="noderesource">
     <v-container fluid>
       <v-layout row wrap>
         <v-flex xs9 sm10>
@@ -89,7 +89,7 @@ export default {
   background-color: rgb(120, 170, 232, 0.11);
 }
 
-p {
+.noderesource p {
   font-size: 12pt;
   color: gray;
 }

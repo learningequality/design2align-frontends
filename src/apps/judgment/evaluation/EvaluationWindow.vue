@@ -141,11 +141,12 @@
                       depressed
                       v-on="on"
                       v-clipboard:copy="shareUrl"
+                      @click="setCopied"
                     >
                       <v-icon large>share</v-icon>
                     </v-btn>
                   </template>
-                  <span>Share</span>
+                  <span>{{ shareText }}</span>
                 </v-tooltip>
               </v-flex>
               <v-spacer />
@@ -181,7 +182,8 @@ export default {
       differences: {},
       similarities: {},
       count: 1,
-      errorMsg: ""
+      errorMsg: "",
+      copied: false
     };
   },
   props: {
@@ -208,6 +210,9 @@ export default {
     },
     matchRules() {
       return [v => !!v || "This field is required"];
+    },
+    shareText() {
+      return this.copied ? "Copied!" : "Share";
     },
     answers() {
       return [
@@ -266,6 +271,12 @@ export default {
           this.node2 = nodes[1];
         });
       }
+    },
+    setCopied() {
+      this.copied = true;
+      setTimeout(() => {
+        this.copied = false;
+      }, 1500);
     },
     maybeSetNodesFromQueryParams(nodeParam1) {
       nodeParam1 = nodeParam1 || this.$route.query.node1;
