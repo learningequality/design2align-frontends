@@ -83,7 +83,8 @@
                     leaderboard!
                   </h2>
                   <p style="color: white;">
-                    You've made {{ currentJudgementCount }} evaluations so far
+                    You've made
+                    {{ currentUser.number_of_judgments }} evaluations so far
                   </p>
                   <v-btn
                     flat
@@ -95,7 +96,9 @@
                 <v-spacer />
                 <v-flex class="rank">
                   <div class="number you">{{ currentStanding + 1 }}</div>
-                  <p><b>YOU</b></p>
+                  <p>
+                    <b>{{ currentUser.username }}</b>
+                  </p>
                 </v-flex>
                 <v-spacer />
                 <v-flex
@@ -153,10 +156,10 @@ export default {
     this.getLeaderboard();
   },
   computed: {
-    currentJudgementCount() {
+    currentUser() {
       if (this.leaderboard.length)
-        return this.leaderboard[this.currentStanding].number_of_judgments;
-      return 0;
+        return this.leaderboard[this.currentStanding];
+      return null;
     },
     currentStanding() {
       let names = _.map(this.leaderboard, l => l.username);
