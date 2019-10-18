@@ -5,22 +5,22 @@
         {{ node.document.title }}
       </div>
 
-      <v-layout row wrap>
-        <v-card-title primary-title
-          ><v-flex>
-            <v-flex align-self-start
-              ><p class="title">{{ node.title }}</p></v-flex
-            >
-            <v-flex align-self-end class="card-actions">
-              <v-chip class="chip-action"> <v-icon small>add</v-icon> </v-chip>
-              <v-chip class="chip-action">
-                <v-icon small>bookmark_border</v-icon>
-              </v-chip>
-              <v-chip class="chip-action"> View Content </v-chip>
-            </v-flex>
-          </v-flex></v-card-title
-        ></v-layout
-      >
+      <v-card-title primary-title>
+        <v-layout align-center row justify-space-between fill-height>
+          <v-flex align-center>
+            <span class="title">{{ node.title }}</span>
+          </v-flex>
+          <v-flex xs10 justify-end class="card-actions">
+            <v-chip class="chip-action">
+              <v-icon small>add</v-icon>
+            </v-chip>
+            <v-chip class="chip-action">
+              <v-icon small>bookmark_border</v-icon>
+            </v-chip>
+            <v-chip class="chip-action"> View Content </v-chip>
+          </v-flex>
+        </v-layout>
+      </v-card-title>
 
       <v-card-text>
         <div>
@@ -86,8 +86,7 @@ export default {
   padding: 12px;
 }
 .card-actions {
-  /*position: absolute;
-  right: 16px;*/
+  text-align: right;
 }
 .chip-action {
   background-color: transparent;
