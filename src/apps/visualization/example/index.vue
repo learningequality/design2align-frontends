@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-navigation-drawer permanent absolute width="400px" app>
+    <v-navigation-drawer permanent absolute width="400px" app clipped>
       <v-container>
         <CurriculumFilter v-model="currentCurriculum" @input="loadTree" />
         <CurriculumTree
@@ -26,6 +26,18 @@
         <div ref="chart"></div>
       </v-container>
     </v-content>
+
+    <v-container align-center fluid grid-list-md>
+      <v-layout row wrap>
+        <v-flex>
+          <RecommendedNode
+            v-for="node in recommendedNodes"
+            v-bind:node="node"
+            :key="node.id"
+          />
+        </v-flex>
+      </v-layout>
+    </v-container>
   </v-container>
 </template>
 
@@ -33,7 +45,9 @@
 import vegaEmbed from "vega-embed";
 import CurriculumFilter from "../../judgment/evaluation/CurriculumFilter";
 import CurriculumTree from "./CurriculumTree";
+import RecommendedNode from "./RecommendedNode";
 import { nodeResource } from "@/client";
+import { recommendedNodesResource } from "@/client";
 
 export default {
   name: "Visualize",
@@ -45,12 +59,14 @@ export default {
       currentCurriculum: null,
       currentRoot: null,
       loading: false,
-      selectedNode: null
+      selectedNode: null,
+      recommendedNodes: null
     };
   },
   components: {
     CurriculumFilter,
-    CurriculumTree
+    CurriculumTree,
+    RecommendedNode
   },
   methods: {
     loadTree() {
@@ -62,6 +78,7 @@ export default {
     },
     selectNode(node) {
       this.selectedNode = node;
+      this.setRecommendedNodes();
     },
     drawChart() {
       vegaEmbed(this.$refs.chart, {
@@ -83,6 +100,13 @@ export default {
           }
         }
       });
+    },
+    setRecommendedNodes() {
+      recommendedNodesResource
+        .getRecommendedNodes(this.selectedNode.id)
+        .then(nodes => {
+          this.recommendedNodes = nodes;
+        });
     }
   }
 };

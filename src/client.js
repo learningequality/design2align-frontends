@@ -106,3 +106,17 @@ class JudgmentResource extends Resource {
 }
 
 export const judgmentResource = new JudgmentResource("judgment");
+
+class RecommendedNodesResource extends Resource {
+  getRecommendedNodes(nodeID, model = "tf_idf_sample_negs_no_training") {
+    return axios
+      .get(`${this.baseUrl}?target=${nodeID}&model=${model}`, this.config)
+      .then(response => {
+        return response.data.results;
+      });
+  }
+}
+
+export const recommendedNodesResource = new RecommendedNodesResource(
+  "recommend"
+);
