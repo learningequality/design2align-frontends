@@ -1,3 +1,4 @@
+import _ from "lodash";
 import axios from "axios";
 import session from "./session";
 
@@ -63,11 +64,31 @@ class LeaderboardResource extends Resource {
 export const leaderboardResource = new LeaderboardResource("leaderboard");
 
 class NodeResource extends Resource {
-  getComparisonNodes(scheduler = "random") {
+  getNodeInCurriculum(curriculum) {
+    return axios
+      .get(`${this.baseUrl}?document=${curriculum}`, this.config)
+      .then(response => {
+        let results = response.data.results;
+        let depthMax = _.maxBy(response.data.results, "depth").depth;
+        results = _.filter(results, { depth: depthMax });
+        return results[_.random(0, results.length - 1)];
+      });
+  }
+  getComparisonNodes(curriculum, scheduler = "random") {
     return axios
       .get(`${this.baseUrl}?scheduler=${scheduler}`, this.config)
       .then(response => {
         return response.data.results;
+      });
+  }
+  getNodeToCompareTo(baseNode, scheduler = "random") {
+    return axios
+      .get(
+        `${this.baseUrl}?left_root_id=${baseNode}&scheduler=${scheduler}`,
+        this.config
+      )
+      .then(response => {
+        return _.reject(response.data.results, { id: baseNode })[0];
       });
   }
   getDocumentNode(documentID) {
@@ -105,10 +126,21 @@ class JudgmentResource extends Resource {
       },
       this.config
     );
-    // return new Promise(resolve => {
-    //   resolve();
-    // });
   }
 }
 
 export const judgmentResource = new JudgmentResource("judgment");
+
+class RecommendedNodesResource extends Resource {
+  getRecommendedNodes(nodeID, model = "tf_idf_sample_negs_no_training") {
+    return axios
+      .get(`${this.baseUrl}?target=${nodeID}&model=${model}`, this.config)
+      .then(response => {
+        return response.data.results;
+      });
+  }
+}
+
+export const recommendedNodesResource = new RecommendedNodesResource(
+  "recommend"
+);

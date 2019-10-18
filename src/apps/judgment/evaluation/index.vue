@@ -1,13 +1,31 @@
 <template>
   <v-content>
-    <v-window v-model="step">
+    <v-container v-if="oneComparison">
+      <EvaluationWindow @submitted="handleSubmit" :total="1" />
+      <v-dialog v-model="dialog" width="500">
+        <v-card>
+          <v-card-text>
+            Thank you for your feedback!
+          </v-card-text>
+          <v-divider></v-divider>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" depressed @click="reload">
+              OK
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </v-container>
+
+    <v-window v-model="step" v-else>
       <v-window-item :value="0">
         <v-layout align-center justify-center fill-height row wrap>
           <div style="text-align: center;">
             <h1>Source standard to compare items to</h1>
             <br />
             <br />
-            <CurriculumFilter v-model="documentID" />
+            <CurriculumFilter v-model="curriculum" />
             <br />
             <v-btn round depressed large dark color="#18BAFF" @click="step++"
               >Start</v-btn
@@ -16,7 +34,11 @@
         </v-layout>
       </v-window-item>
       <v-window-item :value="1">
-        <EvaluationWindow @submitted="handleSubmit" :total="Number(count)" />
+        <EvaluationWindow
+          @submitted="handleSubmit"
+          :total="Number(count)"
+          :curriculum="curriculum && curriculum.id"
+        />
       </v-window-item>
       <v-window-item
         :value="2"
@@ -59,6 +81,9 @@
                   <h2>
                     You are <b>#{{ currentStanding }}</b> on the leaderboard!
                   </h2>
+                  <p style="color: white;">
+                    You've made {{ currentJudgementCount }} evaluations so far
+                  </p>
                   <v-btn
                     flat
                     href="https://alignmentapp.learningequality.org/api/leaderboard"
@@ -113,12 +138,17 @@ export default {
   },
   data() {
     return {
-      count: 2,
+      count: 5,
       step: 0,
-      documentID: null,
+      curriculum: null,
       loadingLeaderboard: false,
-      leaderboard: []
+      leaderboard: [],
+      oneComparison: false,
+      dialog: false
     };
+  },
+  mounted() {
+    this.oneComparison = !!this.$route.query.node2;
   },
   computed: {
     currentJudgementCount() {
@@ -140,21 +170,26 @@ export default {
   },
   methods: {
     reload() {
+      window.location = "/#/judgment/evaluation";
       window.location.reload();
     },
     handleSubmit() {
-      this.step++;
-      this.$confetti.start();
-      this.getLeaderboard();
-      setTimeout(() => {
-        this.$confetti.stop();
-      }, 5000);
+      if (this.oneComparison) {
+        this.dialog = true;
+      } else {
+        this.step++;
+        this.$confetti.start();
+        this.getLeaderboard();
+        setTimeout(() => {
+          this.$confetti.stop();
+        }, 5000);
+      }
     },
     getLeaderboard() {
       this.loadingLeaderboard = true;
       leaderboardResource.getLeaderboard().then(results => {
         this.loadingLeaderboard = false;
-        this.leaderboard = _.sortBy(results, "number_of_judgments");
+        this.leaderboard = results;
       });
     }
   }
