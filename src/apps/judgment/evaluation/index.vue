@@ -4,10 +4,9 @@
       <EvaluationWindow @submitted="handleSubmit" :total="1" />
       <v-dialog v-model="dialog" width="500">
         <v-card>
-          <v-card-text>
+          <v-card-title class="headline" primary-title color="#edf4f8">
             Thank you for your feedback!
-          </v-card-text>
-          <v-divider></v-divider>
+          </v-card-title>
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="primary" depressed @click="reload">
@@ -38,6 +37,7 @@
           @submitted="handleSubmit"
           :total="Number(count)"
           :curriculum="curriculum && curriculum.id"
+          ref="eval"
         />
       </v-window-item>
       <v-window-item
@@ -65,7 +65,13 @@
               You completed <b>{{ count }}</b> more evaluations successfully.
             </h2>
             <br />
-            <v-btn round depressed large dark color="#18BAFF" @click="reload"
+            <v-btn
+              round
+              depressed
+              large
+              dark
+              color="#18BAFF"
+              @click="backToStart"
               >Keep going</v-btn
             >
             <br /><br /><br /><br /><br /><br />
@@ -142,7 +148,7 @@ export default {
   },
   data() {
     return {
-      count: 5,
+      count: 2,
       step: 0,
       curriculum: null,
       loadingLeaderboard: false,
@@ -180,6 +186,11 @@ export default {
       window.location = "/#/judgment/evaluation";
       window.location.reload();
     },
+    backToStart() {
+      this.step = 1;
+      this.$refs.eval.reset();
+      this.$confetti.stop();
+    },
     handleSubmit() {
       if (this.oneComparison) {
         this.dialog = true;
@@ -189,7 +200,7 @@ export default {
         this.getLeaderboard();
         setTimeout(() => {
           this.$confetti.stop();
-        }, 5000);
+        }, 2000);
       }
     },
     getLeaderboard() {
@@ -204,8 +215,11 @@ export default {
 </script>
 
 <style scoped>
-.v-window {
+.v-content {
   background-color: #edf4f8;
+}
+
+.v-window {
   height: 100%;
 }
 

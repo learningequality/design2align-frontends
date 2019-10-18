@@ -50,47 +50,52 @@
                 {{ option.text }}
               </v-btn>
               <br />
-              <v-form
-                v-if="answer && answer.id === option.id"
-                v-model="valid"
-                ref="form"
-                lazy-validation
-              >
-                <div v-if="option.showSimilarities">
-                  <h4>Key SIMILARITIES</h4>
-                  <ToggleBox v-model="similarities.subject" label="Subject" />
-                  <ToggleBox
-                    v-model="similarities.keywords"
-                    label="Key Words"
-                  />
-                  <ToggleBox
-                    v-model="similarities.competency"
-                    label="Competency"
-                  />
-                  <ToggleBox v-model="similarities.task" label="Task" />
-                  <ToggleBox
-                    v-model="similarities.proficiency"
-                    label="Level Proficiency"
-                  />
-                </div>
-                <div v-if="option.showDifferences">
-                  <h4>Key DIFFERENCES</h4>
-                  <ToggleBox v-model="differences.subject" label="Subject" />
-                  <ToggleBox v-model="differences.keywords" label="Key Words" />
-                  <ToggleBox
-                    v-model="differences.competency"
-                    label="Competency"
-                  />
-                  <ToggleBox v-model="differences.task" label="Task" />
-                  <ToggleBox
-                    v-model="differences.proficiency"
-                    label="Level Proficiency"
-                  />
-                </div>
-                <v-divider />
-                <br />
-                <v-textarea label="Additional notes" auto-grow />
-              </v-form>
+              <v-expand-transition>
+                <v-form
+                  v-show="answer && answer.id === option.id"
+                  v-model="valid"
+                  ref="form"
+                  lazy-validation
+                >
+                  <div v-if="option.showSimilarities">
+                    <h4>Key SIMILARITIES</h4>
+                    <ToggleBox v-model="similarities.subject" label="Subject" />
+                    <ToggleBox
+                      v-model="similarities.keywords"
+                      label="Key Words"
+                    />
+                    <ToggleBox
+                      v-model="similarities.competency"
+                      label="Competency"
+                    />
+                    <ToggleBox v-model="similarities.task" label="Task" />
+                    <ToggleBox
+                      v-model="similarities.proficiency"
+                      label="Level Proficiency"
+                    />
+                  </div>
+                  <div v-if="option.showDifferences">
+                    <h4>Key DIFFERENCES</h4>
+                    <ToggleBox v-model="differences.subject" label="Subject" />
+                    <ToggleBox
+                      v-model="differences.keywords"
+                      label="Key Words"
+                    />
+                    <ToggleBox
+                      v-model="differences.competency"
+                      label="Competency"
+                    />
+                    <ToggleBox v-model="differences.task" label="Task" />
+                    <ToggleBox
+                      v-model="differences.proficiency"
+                      label="Level Proficiency"
+                    />
+                  </div>
+                  <v-divider />
+                  <br />
+                  <v-textarea label="Additional notes" auto-grow />
+                </v-form>
+              </v-expand-transition>
             </div>
             <br /><br /><br />
             <v-layout row justify-center style="text-align: center;">
@@ -270,6 +275,29 @@ export default {
           this.node1 = this.node1 || nodes[0];
           this.node2 = nodes[1];
         });
+      }
+    },
+    reset() {
+      this.node1 = null;
+      this.node2 = null;
+      this.rating = null;
+      this.confidence = null;
+      this.comment = "";
+      this.valid = true;
+      this.selectedCurriculum = null;
+      this.answer = null;
+      this.differences = {};
+      this.similarities = {};
+      this.count = 1;
+      this.errorMsg = "";
+      this.copied = false;
+      this.node2 = null;
+      if (this.curriculum) {
+        nodeResource.getNodeInCurriculum(this.curriculum).then(node => {
+          this.setNodes(node.id);
+        });
+      } else {
+        this.setNodes();
       }
     },
     setCopied() {
