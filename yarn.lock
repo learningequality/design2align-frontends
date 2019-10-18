@@ -2426,6 +2426,11 @@ cosmiconfig@^5.0.0, cosmiconfig@^5.2.0:
     js-yaml "^3.13.1"
     parse-json "^4.0.0"
 
+country-code-lookup@^0.0.14:
+  version "0.0.14"
+  resolved "https://registry.yarnpkg.com/country-code-lookup/-/country-code-lookup-0.0.14.tgz#ed14252408458f14fb7b9a4cc88eac18f8a5a9e3"
+  integrity sha512-asW14fBPPma4JZOE6RvJM2T6p2ER1ZQOc3NGdOi/leolZKKgyi8qqZi+7SOaLK7PissJlmhUlLHmKMZEULZmLw==
+
 create-ecdh@^4.0.0:
   version "4.0.3"
   resolved "https://registry.yarnpkg.com/create-ecdh/-/create-ecdh-4.0.3.tgz#c9111b6f33045c4697f144787f9254cdc77c45ff"
@@ -9321,6 +9326,16 @@ vue-clipboard2@^0.3.1:
   integrity sha512-H5S/agEDj0kXjUb5GP2c0hCzIXWRBygaWLN3NEFsaI9I3uWin778SFEMt8QRXiPG+7anyjqWiw2lqcxWUSfkYg==
   dependencies:
     clipboard "^2.0.0"
+
+vue-confetti@^2.0.5:
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/vue-confetti/-/vue-confetti-2.0.5.tgz#99a8c5aa4d6505c7a8f07a1ff63d4bd217596051"
+  integrity sha512-UNIu8baNPSCNkQ2ZpFFy9PA034nEXGuYXx9GQ8IEUlOUroTmlNymuHlSyFu8mK3VsU/XajvHOstcOoxRrWKkxw==
+
+vue-country-flag@^1.3.1:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/vue-country-flag/-/vue-country-flag-1.3.1.tgz#501c708db61f79a0780fea1df62200c3eff660d1"
+  integrity sha512-95tZqVFPYhYRAxfepz9R2Fap8VibcaL41bbD6Hj1DIASjM6iL/juB6gsIwbQ3x4ywMR0YlNhpzf+Ya5J4N5pjQ==
 
 vue-eslint-parser@^2.0.3:
   version "2.0.3"

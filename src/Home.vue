@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <v-content class="home">
     <div v-if="judgmentRoutes.length">
       <h1>Judgment Apps</h1>
       <router-link
@@ -27,7 +27,7 @@
       folder inside the relevant subfolder (<code>judgement</code>, or
       <code>visualization</code>)
     </p>
-  </div>
+  </v-content>
 </template>
 
 <script>
