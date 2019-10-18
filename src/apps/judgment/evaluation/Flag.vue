@@ -29,6 +29,5 @@ export default {
 <style>
 .flag {
   vertical-align: bottom;
-  margin-right: 5px !important;
 }
 </style>
