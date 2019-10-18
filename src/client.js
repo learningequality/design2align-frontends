@@ -112,7 +112,7 @@ class RecommendedNodesResource extends Resource {
     return axios
       .get(`${this.baseUrl}?target=${nodeID}&model=${model}`, this.config)
       .then(response => {
-        return response.data.results;
+        return response.data;
       });
   }
 }
@@ -120,3 +120,12 @@ class RecommendedNodesResource extends Resource {
 export const recommendedNodesResource = new RecommendedNodesResource(
   "recommend"
 );
+
+class ModelResource extends Resource {
+  getModels() {
+    return axios.get(`${this.baseUrl}`, this.config).then(response => {
+      return response.data;
+    });
+  }
+}
+export const modelResource = new ModelResource("model");

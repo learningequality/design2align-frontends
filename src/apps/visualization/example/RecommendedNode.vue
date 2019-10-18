@@ -22,24 +22,37 @@
         </v-layout>
       </v-card-title>
 
-      <v-card-text>
-        <div>
-          {{ node.notes }}
+      <v-card-text
+        ><v-flex align-center>
+          {{ node.notes }} <br /><br />
+
+          <p>Some standards:</p>
           <ul v-if="fullNodeInfo">
-            <li v-for="standard in fullNodeInfo.children" :key="standard.id">
+            <li
+              v-for="standard in fullNodeInfo.children.slice(0, 4)"
+              :key="standard.id"
+            >
               {{ standard.title }}
             </li>
           </ul>
-        </div>
-      </v-card-text>
+        </v-flex></v-card-text
+      >
 
       <v-card-actions>
-        <v-chip class="tag">
-          <Flag :country="node.document.country" />
-        </v-chip>
-        <v-chip class="tag"> Subject </v-chip>
-        <v-chip class="tag"> Grade </v-chip>
-        <v-chip class="tag"> Languages </v-chip>
+        <v-layout align-center row justify-space-between fill-height>
+          <v-flex>
+            <v-chip class="tag">
+              <Flag :country="node.document.country" />
+            </v-chip>
+            <v-chip class="tag"> "Subject" </v-chip>
+            <v-chip class="tag"> "Grade" </v-chip>
+          </v-flex>
+          <v-flex xs2 justify-end class="relevance-score">
+            <span v-bind:class="getRelevanceClass">
+              {{ Math.round(relevanceScore * 100) }}%</span
+            >
+          </v-flex>
+        </v-layout>
       </v-card-actions>
     </v-card>
   </v-flex>
@@ -62,9 +75,23 @@ export default {
   created() {
     this.setFullNodeInfo();
   },
+  computed: {
+    getRelevanceClass() {
+      if (this.relevanceScore >= 0.75) {
+        return "high-relevance";
+      } else if (this.relevanceScore >= 0.45) {
+        return "medium-relevance";
+      }
+      return "low-relevance";
+    }
+  },
   props: {
     node: {
       type: Object,
+      required: true
+    },
+    relevanceScore: {
+      type: Number,
       required: true
     }
   },
@@ -92,6 +119,19 @@ export default {
   background-color: transparent;
   border: 1px solid #2f80ed;
   color: #2f80ed;
+}
+.relevance-score {
+  font-size: 20px;
+  font-weight: bold;
+}
+.high-relevance {
+  color: #219653;
+}
+.medium-relevance {
+  color: #f2994a;
+}
+.low-relevance {
+  color: #f24a4a;
 }
 .tag {
   background-color: #f0f6fb;
