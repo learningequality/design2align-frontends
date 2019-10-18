@@ -75,14 +75,16 @@
               <p style="color: white;">Loading leaderboard...</p>
               <v-progress-linear indeterminate />
             </div>
-            <v-container fluid v-else-if="currentStanding">
+            <v-container fluid v-else-if="!isNaN(currentStanding)">
               <v-layout row>
                 <v-flex xs4>
                   <h2>
-                    You are <b>#{{ currentStanding }}</b> on the leaderboard!
+                    You are <b>#{{ currentStanding + 1 }}</b> on the
+                    leaderboard!
                   </h2>
                   <p style="color: white;">
-                    You've made {{ currentJudgementCount }} evaluations so far
+                    You've made
+                    {{ currentUser.number_of_judgments }} evaluations so far
                   </p>
                   <v-btn
                     flat
@@ -93,8 +95,10 @@
                 </v-flex>
                 <v-spacer />
                 <v-flex class="rank">
-                  <div class="number you">{{ currentJudgementCount }}</div>
-                  <p><b>YOU</b></p>
+                  <div class="number you">{{ currentStanding + 1 }}</div>
+                  <p>
+                    <b>{{ currentUser.username }}</b>
+                  </p>
                 </v-flex>
                 <v-spacer />
                 <v-flex
@@ -106,12 +110,12 @@
                     <template v-slot:activator="{ on }">
                       <div dark v-on="on">
                         <div class="number">
-                          {{ person.number_of_judgments }}
+                          {{ currentStanding - i }}
                         </div>
                         <p style="color: white;">{{ person.username }}</p>
                       </div>
                     </template>
-                    <span>#{{ currentStanding - i - 1 }}</span>
+                    <span>{{ person.number_of_judgments }} evaluations</span>
                   </v-tooltip>
                 </v-flex>
               </v-layout>
@@ -149,12 +153,13 @@ export default {
   },
   mounted() {
     this.oneComparison = !!this.$route.query.node2;
+    this.getLeaderboard();
   },
   computed: {
-    currentJudgementCount() {
+    currentUser() {
       if (this.leaderboard.length)
-        return this.leaderboard[this.currentStanding].number_of_judgments;
-      return 0;
+        return this.leaderboard[this.currentStanding];
+      return { username: "", number_of_judgments: 0 };
     },
     currentStanding() {
       let names = _.map(this.leaderboard, l => l.username);
@@ -162,9 +167,11 @@ export default {
       return index;
     },
     nextFive() {
-      return this.leaderboard.slice(
-        this.currentStanding + 1,
-        Math.min(this.currentStanding + 5, this.leaderboard.length)
+      return _.reverse(
+        this.leaderboard.slice(
+          Math.max(this.currentStanding - 5, 0),
+          this.currentStanding
+        )
       );
     }
   },
@@ -223,6 +230,8 @@ b {
 .rank {
   text-align: center;
   cursor: pointer;
+  max-width: 100px;
+  word-break: break-word;
 }
 
 .number {
