@@ -126,9 +126,6 @@ class JudgmentResource extends Resource {
       },
       this.config
     );
-    // return new Promise(resolve => {
-    //   resolve();
-    // });
   }
 }
 
