@@ -70,6 +70,16 @@ class NodeResource extends Resource {
         return response.data.results;
       });
   }
+  getNodeToCompareTo(baseNode, scheduler = "random") {
+    return axios
+      .get(
+        `${this.baseUrl}?left_root_id=${baseNode}&scheduler=${scheduler}`,
+        this.config
+      )
+      .then(response => {
+        return response.data.results[1];
+      });
+  }
   getDocumentNode(documentID) {
     return axios
       .get(`${this.baseUrl}?document=${documentID}&depth=1`, this.config)
@@ -112,3 +122,17 @@ class JudgmentResource extends Resource {
 }
 
 export const judgmentResource = new JudgmentResource("judgment");
+
+class RecommendedNodesResource extends Resource {
+  getRecommendedNodes(nodeID, model = "tf_idf_sample_negs_no_training") {
+    return axios
+      .get(`${this.baseUrl}?target=${nodeID}&model=${model}`, this.config)
+      .then(response => {
+        return response.data.results;
+      });
+  }
+}
+
+export const recommendedNodesResource = new RecommendedNodesResource(
+  "recommend"
+);

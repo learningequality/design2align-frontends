@@ -1,6 +1,9 @@
 <template>
   <v-container fluid>
     <v-layout row wrap>
+      <v-alert :value="errorMsg.length > 0" dismissible type="error">
+        {{ errorMsg }}
+      </v-alert>
       <v-flex xs12 sm6 md4 class="section">
         <h2>Main content item</h2>
         <Node v-if="node1" :nodeData="node1" />
@@ -137,7 +140,7 @@
                       fab
                       depressed
                       v-on="on"
-                      @click="submitRating"
+                      v-clipboard:copy="shareUrl"
                     >
                       <v-icon large>share</v-icon>
                     </v-btn>
@@ -177,19 +180,32 @@ export default {
       answer: null,
       differences: {},
       similarities: {},
-      count: 1
+      count: 1,
+      errorMsg: ""
     };
   },
   props: {
     total: {
       type: Number,
       default: 5
+    },
+    curriculum: {
+      type: Number,
+      required: false
     }
   },
   created() {
     this.setNodes();
   },
   computed: {
+    shareUrl() {
+      if (this.node1 && this.node2) {
+        let query = { node1: this.node1.id, node2: this.node2.id };
+        const route = { name: "judgment-evaluation-index", query };
+        return window.location.origin + "/" + this.$router.resolve(route).href;
+      }
+      return "";
+    },
     matchRules() {
       return [v => !!v || "This field is required"];
     },
@@ -232,10 +248,45 @@ export default {
       this.answer = null;
       this.confidence = null;
       this.startTimer();
-      nodeResource.getComparisonNodes().then(nodes => {
-        if (!this.node1) this.node1 = nodes[0];
-        this.node2 = nodes[1];
+
+      if (!this.maybeSetNodesFromQueryParams()) {
+        // Randomly get two nodes to compare if the user hasn't specified them.
+        nodeResource.getComparisonNodes().then(nodes => {
+          this.node1 = nodes[0];
+          this.node2 = nodes[1];
+        });
+      }
+    },
+    maybeSetNodesFromQueryParams() {
+      // node1 must be set and a valid number to proceed.
+      let nodeParam1 = this.$route.query.node1;
+      if (nodeParam1 == null) {
+        return false;
+      }
+      let nodeId1 = parseInt(nodeParam1);
+      if (isNaN(nodeId1)) {
+        this.errorMsg = "The node1 and node2 parameters must be valid numbers.";
+        return false;
+      }
+      nodeResource.getModel(nodeId1).then(node => {
+        this.node1 = node;
       });
+
+      let nodeParam2 = this.$route.query.node2;
+      let nodeId2 = parseInt(nodeParam2);
+      if (!isNaN(nodeId2)) {
+        nodeResource.getModel(nodeId2).then(node => {
+          this.node2 = node;
+        });
+      } else if (nodeParam2 != null) {
+        // node2 is specified but not a valid number.
+        this.errorMsg = "The node1 and node2 parameters must be valid numbers.";
+        nodeResource.getNodeToCompareTo(nodeId1).then(node => {
+          this.node2 = node;
+        });
+      }
+
+      return true;
     },
     submitRating() {
       const name = this.$route.name.replace("judgment-", "");
