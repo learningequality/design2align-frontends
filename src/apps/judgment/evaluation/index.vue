@@ -1,137 +1,208 @@
 <template>
-  <v-container fluid>
-    <v-layout row wrap>
-      <v-flex xs12> </v-flex>
-      <v-flex xs6>
-        <Node v-if="node1" :nodeData="node1" />
-      </v-flex>
-      <v-flex xs6>
-        <Node v-if="node2" :nodeData="node2" />
-      </v-flex>
-      <v-flex xs12>
-        <v-container fluid>
-          <v-form
-            @submit.prevent="submitRating"
-            v-model="valid"
-            ref="form"
-            lazy-validation
-          >
-            <v-radio-group
-              v-model="rating"
-              label="How relevant are these two nodes to one another?"
-              required
-              :rules="matchRules"
+  <v-content>
+    <v-window v-model="step">
+      <v-window-item :value="0">
+        <v-layout align-center justify-center fill-height row wrap>
+          <div style="text-align: center;">
+            <h1>Source standard to compare items to</h1>
+            <br />
+            <br />
+            <CurriculumFilter v-model="documentID" />
+            <br />
+            <v-btn round depressed large dark color="#18BAFF" @click="step++"
+              >Start</v-btn
             >
-              <v-radio label="Highly relevant" value="1" />
-              <v-radio label="Somewhat relevant" value="0.5" />
-              <v-radio label="Not relevant" value="0" />
-            </v-radio-group>
-            <v-radio-group
-              v-model="confidence"
-              label="How confident are you of this decision?"
+          </div>
+        </v-layout>
+      </v-window-item>
+      <v-window-item :value="1">
+        <EvaluationWindow @submitted="handleSubmit" :total="Number(count)" />
+      </v-window-item>
+      <v-window-item
+        :value="2"
+        style="background-color: #1A2039; color: white;"
+      >
+        <v-layout align-center justify-center fill-height row wrap>
+          <div style="text-align: center;">
+            <div>
+              <img
+                style="width: 150px; margin-right: 20px; vertical-align: bottom;"
+                src="./robot.png"
+              />
+              <div
+                style="font-size: 20pt; font-family: Courier; display: inline-block; width: 200px; text-align: center;"
+              >
+                Thanks for teaching me!
+              </div>
+            </div>
+            <br /><br /><br />
+
+            <h1>Way to go!</h1>
+            <br />
+            <h2>
+              You completed <b>{{ count }}</b> more evaluations successfully.
+            </h2>
+            <br />
+            <v-btn round depressed large dark color="#18BAFF" @click="reload"
+              >Keep going</v-btn
             >
-              <v-radio label="Completely" value="1" />
-              <v-radio label="Somewhat" value="0.5" />
-              <v-radio label="Not at all" value="0" />
-            </v-radio-group>
-            <v-textarea
-              label="What criteria did you use to make this decision?"
-              auto-grow
-            />
-            <v-btn type="submit">
-              Submit
-            </v-btn>
-          </v-form>
-        </v-container>
-      </v-flex>
-    </v-layout>
-  </v-container>
+            <br /><br /><br /><br /><br /><br />
+            <v-divider dark />
+            <div v-if="loadingLeaderboard">
+              <br />
+              <p style="color: white;">Loading leaderboard...</p>
+              <v-progress-linear indeterminate />
+            </div>
+            <v-container fluid v-else-if="currentStanding">
+              <v-layout row>
+                <v-flex xs4>
+                  <h2>
+                    You are <b>#{{ currentStanding }}</b> on the leaderboard!
+                  </h2>
+                  <v-btn
+                    flat
+                    href="https://alignmentapp.learningequality.org/api/leaderboard"
+                    target="_blank"
+                    >See leaderboard</v-btn
+                  >
+                </v-flex>
+                <v-spacer />
+                <v-flex class="rank">
+                  <div class="number you">{{ currentJudgementCount }}</div>
+                  <p><b>YOU</b></p>
+                </v-flex>
+                <v-spacer />
+                <v-flex
+                  v-for="(person, i) in nextFive"
+                  class="rank"
+                  :key="person.username"
+                >
+                  <v-tooltip top>
+                    <template v-slot:activator="{ on }">
+                      <div dark v-on="on">
+                        <div class="number">
+                          {{ person.number_of_judgments }}
+                        </div>
+                        <p style="color: white;">{{ person.username }}</p>
+                      </div>
+                    </template>
+                    <span>#{{ currentStanding - i - 1 }}</span>
+                  </v-tooltip>
+                </v-flex>
+              </v-layout>
+            </v-container>
+          </div>
+        </v-layout>
+      </v-window-item>
+    </v-window>
+  </v-content>
 </template>
 
 <script>
-import Node from "./Node";
-import { nodeResource, judgmentResource } from "@/client";
+import _ from "lodash";
+import EvaluationWindow from "./EvaluationWindow";
+import CurriculumFilter from "./CurriculumFilter";
+import { leaderboardResource } from "@/client";
+import sessionData from "@/session";
+
 export default {
   name: "Judgment",
   components: {
-    Node
+    EvaluationWindow,
+    CurriculumFilter
   },
   data() {
     return {
-      node1: null,
-      node2: null,
-      rating: null,
-      confidence: null,
-      comment: "",
-      valid: true,
-      selectedCurriculum: null
+      count: 2,
+      step: 0,
+      documentID: null,
+      loadingLeaderboard: false,
+      leaderboard: []
     };
   },
-  created() {
-    this.setNodes();
-  },
   computed: {
-    matchRules() {
-      return [v => !!v || "This field is required"];
+    currentJudgementCount() {
+      if (this.leaderboard.length)
+        return this.leaderboard[this.currentStanding].number_of_judgments;
+      return 0;
+    },
+    currentStanding() {
+      let names = _.map(this.leaderboard, l => l.username);
+      let index = _.indexOf(names, sessionData.username);
+      return index;
+    },
+    nextFive() {
+      return this.leaderboard.slice(
+        this.currentStanding + 1,
+        Math.min(this.currentStanding + 5, this.leaderboard.length)
+      );
     }
   },
   methods: {
-    setNodes() {
-      this.node1 = null;
-      this.node2 = null;
-      this.rating = null;
-      this.confidence = null;
-      this.startTimer();
-      nodeResource.getComparisonNodes().then(nodes => {
-        this.node1 = nodes[0];
-        this.node2 = nodes[1];
+    reload() {
+      window.location.reload();
+    },
+    handleSubmit() {
+      this.step++;
+      this.$confetti.start();
+      this.getLeaderboard();
+      setTimeout(() => {
+        this.$confetti.stop();
+      }, 5000);
+    },
+    getLeaderboard() {
+      this.loadingLeaderboard = true;
+      leaderboardResource.getLeaderboard().then(results => {
+        this.loadingLeaderboard = false;
+        this.leaderboard = _.sortBy(results, "number_of_judgments");
       });
-    },
-    submitRating() {
-      if (this.$refs.form.validate()) {
-        this.$refs.form.resetValidation();
-        const name = this.$route.name.replace("judgment-", "");
-        const uiName =
-          name.slice(0, 1).toUpperCase() + name.replace("-index", "").slice(1);
-        this.stopTimer();
-        return judgmentResource
-          .submitJudgment(
-            this.node1.id,
-            this.node2.id,
-            this.rating,
-            this.confidence,
-            uiName,
-            {
-              comment: this.comment,
-              time_for_judgment: this.elapsedTime
-            }
-          )
-          .then(() => {
-            this.$refs.form.reset();
-            return this.setNodes();
-          });
-      }
-    },
-    startTimer() {
-      this.elapsedTime = null;
-      this.resumeTimer();
-      window.addEventListener("blur", this.stopTimer.bind(this));
-      window.addEventListener("focus", this.resumeTimer.bind(this));
-    },
-    stopTimer() {
-      if (this.timerRunning) {
-        this.timerRunning = false;
-        this.elapsedTime += Date.now() - this.startTime;
-      }
-    },
-    resumeTimer() {
-      if (!this.timerRunning) {
-        this.timerRunning = true;
-        this.startTime = Date.now();
-      }
     }
   }
 };
 </script>
 
-<style lang="scss"></style>
+<style scoped>
+.v-window {
+  background-color: #edf4f8;
+  height: 100%;
+}
+
+/deep/ .v-window__container,
+.v-window-item {
+  height: 100%;
+}
+
+.count {
+  font-size: 20pt;
+  max-width: 200px;
+  margin: 0 auto;
+}
+.count /deep/ input {
+  text-align: center;
+}
+
+b {
+  color: #18baff;
+}
+
+.rank {
+  text-align: center;
+  cursor: pointer;
+}
+
+.number {
+  background-color: #3852c0;
+  border-radius: 100px;
+  width: 50px;
+  height: 50px;
+  padding: 7px;
+  margin: 0 auto;
+  color: white;
+  font-size: 18pt;
+  margin-bottom: 10px;
+}
+
+.number.you {
+  background-color: #18baff;
+}
+</style>

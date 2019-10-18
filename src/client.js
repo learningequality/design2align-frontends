@@ -49,6 +49,19 @@ class DocumentResource extends Resource {
 }
 export const documentResource = new DocumentResource("document");
 
+class LeaderboardResource extends Resource {
+  get baseUrl() {
+    return `${baseUrl}/api/${this.resourceName}`;
+  }
+
+  getLeaderboard() {
+    return axios.get(`${this.baseUrl}`, this.config).then(response => {
+      return response.data;
+    });
+  }
+}
+export const leaderboardResource = new LeaderboardResource("leaderboard");
+
 class NodeResource extends Resource {
   getComparisonNodes(scheduler = "random") {
     return axios
@@ -92,6 +105,9 @@ class JudgmentResource extends Resource {
       },
       this.config
     );
+    // return new Promise(resolve => {
+    //   resolve();
+    // });
   }
 }
 
