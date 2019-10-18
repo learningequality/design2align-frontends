@@ -159,7 +159,7 @@ export default {
     currentUser() {
       if (this.leaderboard.length)
         return this.leaderboard[this.currentStanding];
-      return null;
+      return { username: "", number_of_judgments: 0 };
     },
     currentStanding() {
       let names = _.map(this.leaderboard, l => l.username);
