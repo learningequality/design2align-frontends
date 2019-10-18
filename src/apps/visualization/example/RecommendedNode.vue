@@ -1,48 +1,58 @@
 <template>
-  <v-flex>
-    <v-card>
-      <div class="card-header">
-        {{ node.document.title }}
-      </div>
+  <v-card>
+    <div class="card-header">
+      {{ node.document.title }}
+    </div>
 
-      <v-layout row wrap>
-        <v-card-title primary-title
-          ><v-flex>
-            <v-flex align-self-start
-              ><p class="title">{{ node.title }}</p></v-flex
-            >
-            <v-flex align-self-end class="card-actions">
-              <v-chip class="chip-action"> <v-icon small>add</v-icon> </v-chip>
-              <v-chip class="chip-action">
-                <v-icon small>bookmark_border</v-icon>
-              </v-chip>
-              <v-chip class="chip-action"> View Content </v-chip>
-            </v-flex>
-          </v-flex></v-card-title
-        ></v-layout
-      >
+    <v-card-title primary-title>
+      <v-layout align-center row justify-space-between fill-height>
+        <v-flex align-center>
+          <span class="title">{{ node.title }}</span>
+        </v-flex>
+        <v-flex xs8 justify-end class="card-actions">
+          <v-chip class="chip-action">
+            <v-icon small>add</v-icon>
+          </v-chip>
+          <v-chip class="chip-action">
+            <v-icon small>bookmark_border</v-icon>
+          </v-chip>
+          <v-chip class="chip-action"> View Content </v-chip>
+        </v-flex>
+      </v-layout>
+    </v-card-title>
 
-      <v-card-text>
-        <div>
-          {{ node.notes }}
-          <ul v-if="fullNodeInfo">
-            <li v-for="standard in fullNodeInfo.children" :key="standard.id">
-              {{ standard.title }}
-            </li>
-          </ul>
-        </div>
-      </v-card-text>
+    <v-card-text class="card-text">
+      <div v-if="node.notes.length > 0">{{ node.notes }} <br /><br /></div>
 
-      <v-card-actions>
-        <v-chip class="tag">
-          <Flag :country="node.document.country" />
-        </v-chip>
-        <v-chip class="tag"> Subject </v-chip>
-        <v-chip class="tag"> Grade </v-chip>
-        <v-chip class="tag"> Languages </v-chip>
-      </v-card-actions>
-    </v-card>
-  </v-flex>
+      <p>Some standards:</p>
+      <ul v-if="fullNodeInfo">
+        <li
+          v-for="standard in fullNodeInfo.children.slice(0, 4)"
+          :key="standard.id"
+        >
+          {{ standard.title }}
+        </li>
+      </ul>
+    </v-card-text>
+
+    <v-card-actions>
+      <v-layout align-center row justify-space-between fill-height>
+        <v-flex>
+          <v-chip class="tag">
+            <Flag :country="node.document.country" />
+          </v-chip>
+        </v-flex>
+
+        <v-flex xs4 justify-end class="relevance">
+          <span v-bind:class="getRelevanceClass" class="relevance-number">
+            {{ Math.round(relevanceScore * 100) }}%</span
+          >
+          <br />
+          <span class="relevance-label">Relevance score</span>
+        </v-flex>
+      </v-layout>
+    </v-card-actions>
+  </v-card>
 </template>
 
 <script>
@@ -62,9 +72,23 @@ export default {
   created() {
     this.setFullNodeInfo();
   },
+  computed: {
+    getRelevanceClass() {
+      if (this.relevanceScore >= 0.75) {
+        return "high-relevance";
+      } else if (this.relevanceScore >= 0.45) {
+        return "medium-relevance";
+      }
+      return "low-relevance";
+    }
+  },
   props: {
     node: {
       type: Object,
+      required: true
+    },
+    relevanceScore: {
+      type: Number,
       required: true
     }
   },
@@ -86,13 +110,36 @@ export default {
   padding: 12px;
 }
 .card-actions {
-  /*position: absolute;
-  right: 16px;*/
+  text-align: right;
+}
+.card-text {
+  padding-top: 0px;
 }
 .chip-action {
   background-color: transparent;
   border: 1px solid #2f80ed;
   color: #2f80ed;
+}
+.relevance {
+  text-align: right;
+  line-height: 100%;
+}
+.relevance-number {
+  font-size: 20px;
+  font-weight: bold;
+}
+.high-relevance {
+  color: #219653;
+}
+.medium-relevance {
+  color: #f2994a;
+}
+.low-relevance {
+  color: #f24a4a;
+}
+.relevance-label {
+  color: #4f4f4f;
+  font-size: 12px;
 }
 .tag {
   background-color: #f0f6fb;
