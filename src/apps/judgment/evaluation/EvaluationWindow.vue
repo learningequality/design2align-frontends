@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid>
+  <v-container fluid :key="curriculum">
     <v-layout row wrap>
       <v-alert :value="errorMsg.length > 0" dismissible type="error">
         {{ errorMsg }}
@@ -241,25 +241,35 @@ export default {
       ];
     }
   },
+  watch: {
+    curriculum(newVal) {
+      if (newVal || newVal === 0) {
+        this.node2 = null;
+        nodeResource.getNodeInCurriculum(newVal).then(node => {
+          this.setNodes(node.id);
+        });
+      }
+    }
+  },
   methods: {
-    setNodes() {
+    setNodes(nodeID) {
       this.node2 = null;
       this.rating = null;
       this.answer = null;
       this.confidence = null;
       this.startTimer();
 
-      if (!this.maybeSetNodesFromQueryParams()) {
+      if (!this.maybeSetNodesFromQueryParams(nodeID)) {
         // Randomly get two nodes to compare if the user hasn't specified them.
         nodeResource.getComparisonNodes().then(nodes => {
-          this.node1 = nodes[0];
+          this.node1 = this.node1 || nodes[0];
           this.node2 = nodes[1];
         });
       }
     },
-    maybeSetNodesFromQueryParams() {
+    maybeSetNodesFromQueryParams(nodeParam1) {
+      nodeParam1 = nodeParam1 || this.$route.query.node1;
       // node1 must be set and a valid number to proceed.
-      let nodeParam1 = this.$route.query.node1;
       if (nodeParam1 == null) {
         return false;
       }
@@ -281,6 +291,10 @@ export default {
       } else if (nodeParam2 != null) {
         // node2 is specified but not a valid number.
         this.errorMsg = "The node1 and node2 parameters must be valid numbers.";
+        nodeResource.getNodeToCompareTo(nodeId1).then(node => {
+          this.node2 = node;
+        });
+      } else {
         nodeResource.getNodeToCompareTo(nodeId1).then(node => {
           this.node2 = node;
         });

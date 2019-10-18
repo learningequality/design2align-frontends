@@ -1,3 +1,4 @@
+import _ from "lodash";
 import axios from "axios";
 import session from "./session";
 
@@ -63,7 +64,17 @@ class LeaderboardResource extends Resource {
 export const leaderboardResource = new LeaderboardResource("leaderboard");
 
 class NodeResource extends Resource {
-  getComparisonNodes(scheduler = "random") {
+  getNodeInCurriculum(curriculum) {
+    return axios
+      .get(`${this.baseUrl}?document=${curriculum}`, this.config)
+      .then(response => {
+        let results = response.data.results;
+        let depthMax = _.maxBy(response.data.results, "depth").depth;
+        results = _.filter(results, { depth: depthMax });
+        return results[_.random(0, results.length - 1)];
+      });
+  }
+  getComparisonNodes(curriculum, scheduler = "random") {
     return axios
       .get(`${this.baseUrl}?scheduler=${scheduler}`, this.config)
       .then(response => {
@@ -77,7 +88,7 @@ class NodeResource extends Resource {
         this.config
       )
       .then(response => {
-        return response.data.results[1];
+        return _.reject(response.data.results, { id: baseNode })[0];
       });
   }
   getDocumentNode(documentID) {

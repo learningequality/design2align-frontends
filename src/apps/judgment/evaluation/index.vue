@@ -10,8 +10,8 @@
           <v-divider></v-divider>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" flat @click="reload">
-              Done
+            <v-btn color="primary" depressed @click="reload">
+              OK
             </v-btn>
           </v-card-actions>
         </v-card>
