@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-navigation-drawer permanent absolute width="400px" app>
+    <v-navigation-drawer permanent absolute width="400px" app clipped>
       <v-container>
         <CurriculumFilter v-model="currentCurriculum" @input="loadTree" />
         <CurriculumTree

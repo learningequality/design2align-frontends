@@ -4,19 +4,35 @@
       <v-progress-circular indeterminate size="15" width="2" />
       &nbsp;Loading curricula...
     </div>
+
     <v-autocomplete
       v-else
+      solo
       :items="curricula"
       v-model="curriculum"
       label="Curriculum"
-      :item-text="getText"
       item-value="id"
-    />
+      :item-text="getText"
+    >
+      <template v-slot:selection="data">
+        <div>
+          <Flag :country="data.item.country" />
+          {{ data.item.country }}: {{ data.item.title }}
+        </div>
+      </template>
+      <template v-slot:item="data">
+        <div>
+          <Flag :country="data.item.country" />
+          {{ data.item.country }}: {{ data.item.title }}
+        </div>
+      </template>
+    </v-autocomplete>
   </div>
 </template>
 
 <script>
 import _ from "lodash";
+import Flag from "./Flag";
 import { documentResource } from "@/client";
 
 export default {
@@ -26,6 +42,9 @@ export default {
       type: Object,
       required: false
     }
+  },
+  components: {
+    Flag
   },
   data() {
     return {
