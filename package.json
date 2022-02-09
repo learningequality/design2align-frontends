@@ -22,7 +22,7 @@
     "vue-country-flag": "^1.3.1",
     "vue-router": "^3.0.3",
     "vuetify": "^1.5.19",
-    "yarn": "^1.19.1"
+    "yarn": "^1.22.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.11.0",
